@@ -19,7 +19,7 @@ func ConvImply(f /* formula */ string) (string, error) {
 
 }
 
-// convImplyは含意を再帰的に変換する.
+// convImply は構文木にある含意を再帰的に変換する.
 func convImply(e /* expression */ Expression, pop /* childs op */ string) string {
 	var rFormula string
 	switch e.(type) {
@@ -47,7 +47,7 @@ func convImply(e /* expression */ Expression, pop /* childs op */ string) string
 	}
 }
 
-// ConvNeg は否定を変換する(ドモルガンの法則を適用する).
+// ConvNeg は否定をリテラルに寄せ、二重否定を削除する.
 func ConvNeg(f /* formula */ string) (string, error) {
 	r := strings.NewReader(f)
 	// goyaccで構文木を作成する.
@@ -58,12 +58,13 @@ func ConvNeg(f /* formula */ string) (string, error) {
 
 	fl := convNeg(p, "", false)
 	return fl, nil
+	//	return strings.Replace(fl, "~~", "", -1), nil
 
 }
 
-// convNegは含意を再帰的に変換する(ドモルガンの法則を適用する).
+// convNeg は構文木にある否定を再帰的にリテラルに寄せる(ドモルガンの法則).
 func convNeg(e /* expression */ Expression, pop /* parent op */ string, n /* negation flag */ bool) string {
-	fmt.Printf("E: %v\n", e)
+	fmt.Println(e)
 	var rFormula string
 	switch e.(type) {
 	case BinOpExpr:
@@ -91,7 +92,11 @@ func convNeg(e /* expression */ Expression, pop /* parent op */ string, n /* neg
 		return right
 	case Literal:
 		if n {
-			return "~" + e.(Literal).Literal
+			rFormula = "~" + e.(Literal).Literal
+			if pop == "~" {
+				rFormula = "~" + rFormula
+			}
+			return rFormula
 		}
 		return e.(Literal).Literal
 	default:

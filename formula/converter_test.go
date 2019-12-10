@@ -84,6 +84,30 @@ func TestConv(t *testing.T) {
 		t.Errorf("(Convert ~(A&B&C) to (~A|~B|~C): Failed. The result is %v", r)
 	}
 
+	// Convert ~(~A&B&C) to (A|~B|~C)
+	f = "~(~A&B&C)"
+
+	r, err = ConvNeg(f)
+	if err != nil {
+		printError(err)
+	}
+
+	if r != "(A|~B|~C)" {
+		t.Errorf("(Convert ~(~A&B&C) to (A|~B|~C): Failed. The result is %v", r)
+	}
+
+	// Convert ~(~A&~(~B&C)) to (A|~B|~C)
+	f = "~(~A&~(~B&C))"
+
+	r, err = ConvNeg(f)
+	if err != nil {
+		printError(err)
+	}
+
+	if r != "(A|~B|~C)" {
+		t.Errorf("(Convert ~(~A&~(~B&C)) to (A|~B|~C): Failed. The result is %v", r)
+	}
+
 	// Convert ~(A&(B|C)) to (~A|(~B&~C))
 	f = "~(A&(B|C))"
 

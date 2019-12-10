@@ -25,7 +25,7 @@ func convert() int {
 	// 変換に要した時間を計測するため,開始時間を取得する.
 	st := time.Now()
 
-	r, err := formula.Conv(f)
+	r, err := formula.ConvImply(f)
 	if err != nil {
 		printError(err)
 		return 1
