@@ -6,11 +6,35 @@ import (
 	"testing"
 )
 
-func TestConv(t *testing.T) {
+func TestConvImply(t *testing.T) {
 
 	var f string
 	var r string
 	var err error
+
+	// Convert A to A
+	f = "A"
+
+	r, err = ConvImply(f)
+	if err != nil {
+		printError(err)
+	}
+
+	if r != "A" {
+		t.Errorf("(Convert A to A: Failed. The result is %v", r)
+	}
+
+	// Convert A&A to (A&A)
+	f = "A&A"
+
+	r, err = ConvNeg(f)
+	if err != nil {
+		printError(err)
+	}
+
+	if r != "(A&A)" {
+		t.Errorf("(Convert A to A: Failed. The result is %v", r)
+	}
 
 	// Convert A>B to (~A|B)
 	f = "A>B"
@@ -72,6 +96,38 @@ func TestConv(t *testing.T) {
 		t.Errorf("(Convert (A&B&C|D&E&F) to ((A&B&C)|(D&E&F)): Failed. The result is %v", r)
 	}
 
+}
+
+func TestConvNeg(t *testing.T) {
+
+	var f string
+	var r string
+	var err error
+
+	// Convert A to A
+	f = "A"
+
+	r, err = ConvNeg(f)
+	if err != nil {
+		printError(err)
+	}
+
+	if r != "A" {
+		t.Errorf("(Convert A to A: Failed. The result is %v", r)
+	}
+
+	// Convert A&A to (A&A)
+	f = "A&A"
+
+	r, err = ConvNeg(f)
+	if err != nil {
+		printError(err)
+	}
+
+	if r != "(A&A)" {
+		t.Errorf("(Convert A to A: Failed. The result is %v", r)
+	}
+
 	// Convert ~(A&B&C) to (~A|~B|~C)
 	f = "~(A&B&C)"
 
@@ -104,8 +160,8 @@ func TestConv(t *testing.T) {
 		printError(err)
 	}
 
-	if r != "(A|~B|~C)" {
-		t.Errorf("(Convert ~(~A&~(~B&C)) to (A|~B|~C): Failed. The result is %v", r)
+	if r != "(A|(~B&C))" {
+		t.Errorf("(Convert ~(~A&~(~B&C)) to (A|(~B&C)): Failed. The result is %v", r)
 	}
 
 	// Convert ~(A&(B|C)) to (~A|(~B&~C))
@@ -130,6 +186,18 @@ func TestConv(t *testing.T) {
 
 	if r != "((~A|~B|~C)|(~A|~B|~C))" {
 		t.Errorf("(Convert ~(A&B&C)|~(A&B&C) to ((~A|~B|~C)|(~A|~B|~C)): Failed. The result is %v", r)
+	}
+
+	// Convert ~~A to A
+	f = "~~A"
+
+	r, err = ConvNeg(f)
+	if err != nil {
+		printError(err)
+	}
+
+	if r != "A" {
+		t.Errorf("(Convert ~~A to A: Failed. The result is %v", r)
 	}
 
 }

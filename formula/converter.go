@@ -1,7 +1,6 @@
 package formula
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -47,7 +46,7 @@ func convImply(e /* expression */ Expression, pop /* childs op */ string) string
 	}
 }
 
-// ConvNeg は否定をリテラルに寄せ、二重否定を削除する.
+// ConvNeg は否定をリテラルに寄せ,二重否定を削除する.
 func ConvNeg(f /* formula */ string) (string, error) {
 	r := strings.NewReader(f)
 	// goyaccで構文木を作成する.
@@ -56,22 +55,22 @@ func ConvNeg(f /* formula */ string) (string, error) {
 		return "", err
 	}
 
-	fl := convNeg(p, "", false)
+	fl := convNeg(p, "", 0)
 	return fl, nil
 	//	return strings.Replace(fl, "~~", "", -1), nil
 
 }
 
-// convNeg は構文木にある否定を再帰的にリテラルに寄せる(ドモルガンの法則).
-func convNeg(e /* expression */ Expression, pop /* parent op */ string, n /* negation flag */ bool) string {
-	fmt.Println(e)
+// convNeg は構文木にある否定を再帰的にリテラルに寄せる(ドモルガンの法則). また,二重否定を削除する.
+func convNeg(e /* expression */ Expression, pop /* parent op */ string, nc /* negation counter */ int) string {
 	var rFormula string
 	switch e.(type) {
 	case BinOpExpr:
 		op := string(rune(e.(BinOpExpr).Operator))
-		left := convNeg(e.(BinOpExpr).Left, op, n)
-		right := convNeg(e.(BinOpExpr).Right, op, n)
-		if n {
+		left := convNeg(e.(BinOpExpr).Left, op, nc)
+		right := convNeg(e.(BinOpExpr).Right, op, nc)
+		// 二重否定の場合は,&と|の変換を行わない.
+		if nc%2 != 0 {
 			if op == "&" {
 				rFormula = left + "|" + right
 			}
@@ -88,17 +87,16 @@ func convNeg(e /* expression */ Expression, pop /* parent op */ string, n /* neg
 		return "(" + rFormula + ")"
 	case NotOpExpr:
 		op := string(rune(e.(NotOpExpr).Operator))
-		right := convNeg(e.(NotOpExpr).Right, op, true)
+		nc++
+		right := convNeg(e.(NotOpExpr).Right, op, nc)
 		return right
 	case Literal:
-		if n {
-			rFormula = "~" + e.(Literal).Literal
-			if pop == "~" {
-				rFormula = "~" + rFormula
-			}
-			return rFormula
+		rFormula = e.(Literal).Literal
+		// 二重否定の場合は否定記号を追加しない.
+		if nc%2 != 0 {
+			rFormula = "~" + rFormula
 		}
-		return e.(Literal).Literal
+		return rFormula
 	default:
 		return ""
 	}
