@@ -46,7 +46,7 @@ func convImply(e /* expression */ Expression, pop /* childs op */ string) string
 	}
 }
 
-// ConvNeg は否定をリテラルに寄せ,二重否定を削除する.
+// ConvNeg は否定を変数へ寄せ,二重否定を削除する.
 func ConvNeg(f /* formula */ string) (string, error) {
 	r := strings.NewReader(f)
 	// goyaccで構文木を作成する.
@@ -61,7 +61,7 @@ func ConvNeg(f /* formula */ string) (string, error) {
 
 }
 
-// convNeg は構文木にある否定を再帰的にリテラルに寄せる(ドモルガンの法則). また,二重否定を削除する.
+// convNeg は構文木にある否定を,ドモルガンの法則に従って再帰的に変数へ寄せる. また,二重否定を削除する.
 func convNeg(e /* expression */ Expression, pop /* parent op */ string, nc /* negation counter */ int) string {
 	var rFormula string
 	switch e.(type) {

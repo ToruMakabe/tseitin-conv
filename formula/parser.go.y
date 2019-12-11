@@ -41,7 +41,8 @@ type BinOpExpr struct {
 %type<expr> expr and_expr or_expr not_expr imply_expr parenth_expr
 %token<token> LITERAL
 
-%left '&' '|' '>'
+%right '>'
+%left '&' '|'
 %right '~'
 
 %%

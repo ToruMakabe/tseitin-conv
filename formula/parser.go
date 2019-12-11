@@ -49,9 +49,9 @@ var yyToknames = [...]string{
 	"error",
 	"$unk",
 	"LITERAL",
+	"'>'",
 	"'&'",
 	"'|'",
-	"'>'",
 	"'~'",
 	"'('",
 	"')'",
@@ -62,7 +62,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line parser.go.y:98
+//line parser.go.y:99
 
 // 以降はgoyaccのユーザー定義部. Goで字句解析器(Lexer)と構文解析器(Parser)を記述する.
 
@@ -108,14 +108,14 @@ const yyLast = 22
 
 var yyAct = [...]int{
 
-	2, 11, 12, 13, 3, 8, 19, 6, 9, 10,
-	14, 15, 16, 17, 18, 11, 12, 13, 7, 5,
+	2, 13, 11, 12, 3, 8, 19, 6, 9, 10,
+	14, 15, 16, 17, 18, 13, 11, 12, 7, 5,
 	4, 1,
 }
 var yyPact = [...]int{
 
 	0, -1000, 10, -1000, -1000, -1000, -1000, -1000, -1000, 0,
-	0, 0, 0, 0, -1000, -4, -1000, -1000, -1000, -1000,
+	0, 0, 0, 0, -1000, -4, -1000, -1000, 10, -1000,
 }
 var yyPgo = [...]int{
 
@@ -134,7 +134,7 @@ var yyR2 = [...]int{
 var yyChk = [...]int{
 
 	-1000, -1, -2, 4, -3, -4, -6, -5, -7, 8,
-	9, 5, 6, 7, -2, -2, -2, -2, -2, 10,
+	9, 6, 7, 5, -2, -2, -2, -2, -2, 10,
 }
 var yyDef = [...]int{
 
@@ -146,16 +146,16 @@ var yyTok1 = [...]int{
 	1, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 3, 3, 3, 3, 5, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 6, 3,
 	9, 10, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 7, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 5, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 3, 6, 3, 8,
+	3, 3, 3, 3, 7, 3, 8,
 }
 var yyTok2 = [...]int{
 
@@ -504,44 +504,44 @@ yydefault:
 
 	case 1:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line parser.go.y:52
+//line parser.go.y:53
 		{
 			yyVAL.expr = yyDollar[1].expr
 			yylex.(*Lexer).result = yyVAL.expr
 		}
 	case 2:
 		yyDollar = yyS[yypt-1 : yypt+1]
-//line parser.go.y:59
+//line parser.go.y:60
 		{
 			yyVAL.expr = Literal{Literal: yyDollar[1].token.Literal}
 		}
 	case 8:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line parser.go.y:70
+//line parser.go.y:71
 		{
 			yyVAL.expr = BinOpExpr{Left: yyDollar[1].expr, Operator: '&', Right: yyDollar[3].expr}
 		}
 	case 9:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line parser.go.y:76
+//line parser.go.y:77
 		{
 			yyVAL.expr = BinOpExpr{Left: yyDollar[1].expr, Operator: '|', Right: yyDollar[3].expr}
 		}
 	case 10:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line parser.go.y:82
+//line parser.go.y:83
 		{
 			yyVAL.expr = BinOpExpr{Left: yyDollar[1].expr, Operator: '>', Right: yyDollar[3].expr}
 		}
 	case 11:
 		yyDollar = yyS[yypt-2 : yypt+1]
-//line parser.go.y:88
+//line parser.go.y:89
 		{
 			yyVAL.expr = NotOpExpr{Operator: '~', Right: yyDollar[2].expr}
 		}
 	case 12:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line parser.go.y:94
+//line parser.go.y:95
 		{
 			yyVAL.expr = yyDollar[2].expr
 		}
