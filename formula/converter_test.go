@@ -8,9 +8,11 @@ import (
 
 func TestConvImply(t *testing.T) {
 
-	var f string
-	var r string
-	var err error
+	var (
+		f   string
+		r   string
+		err error
+	)
 
 	// Convert A to A
 	f = "A"
@@ -100,10 +102,11 @@ func TestConvImply(t *testing.T) {
 
 func TestConvNeg(t *testing.T) {
 
-	var f string
-	var r string
-	var err error
-
+	var (
+		f   string
+		r   string
+		err error
+	)
 	// Convert A to A
 	f = "A"
 
@@ -198,6 +201,28 @@ func TestConvNeg(t *testing.T) {
 
 	if r != "A" {
 		t.Errorf("(Convert ~~A to A: Failed. The result is %v", r)
+	}
+
+}
+
+func TestConvTseitin(t *testing.T) {
+
+	var (
+		f   string
+		r   string
+		err error
+	)
+
+	// Convert A to ...
+	f = "A|(B&C&(D|E))"
+
+	r, err = ConvTseitin(f)
+	if err != nil {
+		printError(err)
+	}
+
+	if r != "..." {
+		t.Errorf("(Convert A|(B&C&(D|E)) to ...: Failed. The result is %v", r)
 	}
 
 }
