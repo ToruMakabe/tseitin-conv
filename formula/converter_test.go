@@ -3,6 +3,7 @@ package formula
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -209,20 +210,25 @@ func TestConvTseitin(t *testing.T) {
 
 	var (
 		f   string
-		r   string
+		r   []string
+		rs  [][]string
 		err error
 	)
 
 	// Convert A to ...
 	f = "A|(B&C&(D|E))"
 
-	r, err = ConvTseitin(f)
+	rs, err = ConvTseitin(f)
 	if err != nil {
 		printError(err)
 	}
 
-	if r != "..." {
-		t.Errorf("(Convert A|(B&C&(D|E)) to ...: Failed. The result is %v", r)
+	for _, i := range rs {
+		r = append(r, "("+strings.Join(i, "|")+")")
+	}
+
+	if strings.Join(r, "&") != "" {
+		t.Errorf("(Convert A|(B&C&(D|E)) to ...: Failed. The result is %v", strings.Join(r, "&"))
 	}
 
 }

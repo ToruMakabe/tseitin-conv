@@ -11,54 +11,46 @@ type tseitinConverter struct {
 }
 
 func newTseitinConverter() *tseitinConverter {
-	return &tseitinConverter{fv: "Z", fc: 0}
+	return &tseitinConverter{fv: "x", fc: 0}
 }
 
-func (tc *tseitinConverter) IncFv() string {
+func (tc *tseitinConverter) incFv() string {
 	tc.fc++
 	return tc.fv + strconv.Itoa(tc.fc)
 }
 
-func (tc *tseitinConverter) Conv(e /* expression */ Expression, pop /* parent op */ string) (string, string) {
+func (tc *tseitinConverter) conv(e /* expression */ Expression, pop /* parent op */ string) ([][]string, string) {
 	var (
 		rFormula string
+		r        [][]string
 	)
 	switch e.(type) {
 	case BinOpExpr:
 		op := string(rune(e.(BinOpExpr).Operator))
-		left, lFv := tc.Conv(e.(BinOpExpr).Left, op)
-		right, rFv := tc.Conv(e.(BinOpExpr).Right, op)
-		fv := tc.IncFv()
+		left, lFv := tc.conv(e.(BinOpExpr).Left, op)
+		right, rFv := tc.conv(e.(BinOpExpr).Right, op)
+		fv := tc.incFv()
+		r = append(left, right...)
 		if op == "&" {
-			if lFv == "lit" {
-				rFormula = "(~" + fv + "|" + left + ")&(~" + fv + "|" + right + ")"
-				return rFormula, fv
-			}
-			rFormula = left + "&" + right
-			return rFormula, fv
+			return append(r, []string{"~" + fv, lFv, rFv}), fv
 		}
 		if op == "|" {
-			if lFv == "lit" {
-				rFormula = "(~" + fv + "|" + left + "|" + right + ")"
-				return rFormula, fv
-			}
-			rFormula = "(~" + fv + "|" + left + "|" + right + ")"
+			return append(r, []string{"~" + fv, lFv}, []string{"~" + fv, rFv}), fv
 		}
-		return rFormula, fv
 	case NotOpExpr:
 		op := string(rune(e.(BinOpExpr).Operator))
-		right, _ := tc.Conv(e.(NotOpExpr).Right, op)
+		right, _ := tc.conv(e.(NotOpExpr).Right, op)
 		return right, ""
 	case Literal:
 		rFormula = e.(Literal).Literal
 		if pop == "~" {
 			rFormula = "~" + rFormula
 		}
-		return rFormula, "lit"
+		return nil, rFormula
 	default:
-		return "", ""
+		return nil, ""
 	}
-	return "", ""
+	return nil, ""
 
 }
 
@@ -160,16 +152,16 @@ func convNeg(e /* expression */ Expression, pop /* parent op */ string, nc /* ne
 }
 
 // ConvTseitin はxxxする.
-func ConvTseitin(f /* formula */ string) (string, error) {
+func ConvTseitin(f /* formula */ string) ([][]string, error) {
 	r := strings.NewReader(f)
 	// goyaccで構文木を作成する.
 	p, err := Parse(r)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	tc := newTseitinConverter()
-	fl, _ := tc.Conv(p, "")
+	fl, _ := tc.conv(p, "")
 	return fl, nil
 
 }
