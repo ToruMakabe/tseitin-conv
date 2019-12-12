@@ -216,7 +216,7 @@ func TestConvTseitin(t *testing.T) {
 	)
 
 	// Convert A to ...
-	f = "A|(B&C&(D|E))"
+	f = "AA|(B&C&(D|E))"
 
 	rs, err = ConvTseitin(f)
 	if err != nil {
