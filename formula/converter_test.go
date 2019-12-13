@@ -215,20 +215,38 @@ func TestConvTseitin(t *testing.T) {
 		err error
 	)
 
-	// Convert A to ...
-	f = "AA|(B&C&(D|E))"
+	// Convert A to (~x1|B)&(~x1|C)&(~x2|D|E)&(~x3|x1)&(~x3|x2)&(~x4|A|x3)
+	f = "A|(B&C&(D|E))"
 
 	rs, err = ConvTseitin(f)
 	if err != nil {
 		printError(err)
 	}
 
+	r = nil
 	for _, i := range rs {
 		r = append(r, "("+strings.Join(i, "|")+")")
 	}
 
-	if strings.Join(r, "&") != "" {
-		t.Errorf("(Convert A|(B&C&(D|E)) to ...: Failed. The result is %v", strings.Join(r, "&"))
+	if strings.Join(r, "&") != "(~x1|B)&(~x1|C)&(~x2|D|E)&(~x3|x1)&(~x3|x2)&(~x4|A|x3)" {
+		t.Errorf("(Convert A|(B&C&(D|E)) to (~x1|B)&(~x1|C)&(~x2|D|E)&(~x3|x1)&(~x3|x2)&(~x4|A|x3): Failed. The result is %v", strings.Join(r, "&"))
+	}
+
+	// Convert (A&B&~C)|(~A&B&C) to (~x1|A)&(~x1|B)&(~x2|x1)&(~x2|~C)&(~x3|~A)&(~x3|B)&(~x4|x3)&(~x4|C)&(~x5|x2|x4)
+	f = "(A&B&~C)|(~A&B&C)"
+
+	rs, err = ConvTseitin(f)
+	if err != nil {
+		printError(err)
+	}
+
+	r = nil
+	for _, i := range rs {
+		r = append(r, "("+strings.Join(i, "|")+")")
+	}
+
+	if strings.Join(r, "&") != "(~x1|A)&(~x1|B)&(~x2|x1)&(~x2|~C)&(~x3|~A)&(~x3|B)&(~x4|x3)&(~x4|C)&(~x5|x2|x4)" {
+		t.Errorf("(Convert (A&B&~C)|(~A&B&C) to (~x1|A)&(~x1|B)&(~x2|x1)&(~x2|~C)&(~x3|~A)&(~x3|B)&(~x4|x3)&(~x4|C)&(~x5|x2|x4)): Failed. The result is %v", strings.Join(r, "&"))
 	}
 
 }

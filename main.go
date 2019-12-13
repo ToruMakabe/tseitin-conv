@@ -10,7 +10,7 @@ import (
 	"github.com/ToruMakabe/tseitin-conv/formula"
 )
 
-const inputFormatMsg = "Please input xxx"
+const inputFormatMsg = "Please input a propotitinal formula to convert to CNF.\nNagation: ~, And: &, Or: |, Imply: >\nYou cannot use x(n) as propotional variable due to reserved word for fresh variable of Tseitin convertion.\nSample: A|(B&C&(D|E))\n"
 
 // convertは実質的な主処理である.
 func convert() int {
@@ -33,29 +33,42 @@ func convert() int {
 	// 変換に要した時間を計測するため,開始時間を取得する.
 	st := time.Now()
 
+	// 含意を変換する.
 	r, err = formula.ConvImply(f)
 	if err != nil {
+		fmt.Println()
 		printError(err)
+		fmt.Println()
+		fmt.Println(inputFormatMsg)
 		return 1
 	}
 
+	// 否定を変数に寄せ,二重否定を削除する.ここまでの結果でNNFを得る.
 	nnf, err = formula.ConvNeg(r)
 	if err != nil {
+		fmt.Println()
 		printError(err)
+		fmt.Println()
+		fmt.Println(inputFormatMsg)
 		return 1
 	}
 
+	// Tseitin変換を行う.
 	cnfm, err = formula.ConvTseitin(nnf)
 	if err != nil {
+		fmt.Println()
 		printError(err)
+		fmt.Println()
+		fmt.Println(inputFormatMsg)
 		return 1
 	}
 
+	// Tseitin変換の結果が[][]stringのスライスで得られるため,内側の選言部分を文字列化する.
 	for _, i := range cnfm {
 		cnf = append(cnf, "("+strings.Join(i, "|")+")")
 	}
 
-	// 変換の結果得られたCNFを表示する.
+	// CNFを表示する.
 	fmt.Printf("CNF: %v \n", strings.Join(cnf, "&"))
 
 	// 変換に要した時間を表示する.

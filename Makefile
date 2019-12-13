@@ -1,2 +1,2 @@
 build:
-	go build -o lk-prover
+	go build -o tseitin-conv
