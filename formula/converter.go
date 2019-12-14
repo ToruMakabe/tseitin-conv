@@ -11,18 +11,18 @@ type tseitinConverter struct {
 	fc int
 }
 
-// newTseitinConverter はtseitinConverterのコンストラクターで,fresh variableの初期化を行う.
+// newTseitinConverter はtseitinConverterのコンストラクターで, fresh variableの初期化を行う.
 func newTseitinConverter() *tseitinConverter {
 	return &tseitinConverter{fv: "x", fc: 0}
 }
 
-// incFv はtseitinConverterのメソッドで,fresh variableのインデックス部分をインクリメントする.
+// incFv はtseitinConverterのメソッドで, fresh variableのインデックス部分をインクリメントする.
 func (tc *tseitinConverter) incFv() string {
 	tc.fc++
 	return tc.fv + strconv.Itoa(tc.fc)
 }
 
-// conv はtseitinConverterのメソッドで,構文木を再帰的に副式に分解し,Tseitin変換を行う.
+// conv はtseitinConverterのメソッドで, 構文木を再帰的に副式に分解し, Tseitin変換を行う.
 func (tc *tseitinConverter) conv(e /* expression */ Expression, pop /* parent op */ string) ([][]string, string) {
 
 	var (
@@ -33,7 +33,7 @@ func (tc *tseitinConverter) conv(e /* expression */ Expression, pop /* parent op
 	switch e.(type) {
 	case BinOpExpr:
 		op := string(rune(e.(BinOpExpr).Operator))
-		// convの結果,leftに葉から追記を重ねた選言部を,lvに呼び出し先のリテラルか生成したfresh variableを得る. right, rvも同様.
+		// convの結果, leftに葉から追記を重ねた選言部を, lvに呼び出し先のリテラルか生成したfresh variableを得る. right, rvも同様.
 		left, lv := tc.conv(e.(BinOpExpr).Left, op)
 		right, rv := tc.conv(e.(BinOpExpr).Right, op)
 		// fresh variableを生成する.
@@ -75,7 +75,7 @@ func ConvImply(f /* formula */ string) (string, error) {
 		return "", err
 	}
 
-	// 再帰的に構文木を探索するため,切り出した別関数を呼び出す.
+	// 再帰的に構文木を探索するため, 切り出した別関数を呼び出す.
 	fl := convImply(p, "")
 	return fl, nil
 
@@ -109,7 +109,7 @@ func convImply(e /* expression */ Expression, pop /* parent op */ string) string
 	}
 }
 
-// ConvNeg は否定を変数へ寄せ,二重否定を削除する.
+// ConvNeg は否定を変数へ寄せ, 二重否定を削除する.
 func ConvNeg(f /* formula */ string) (string, error) {
 	r := strings.NewReader(f)
 	// goyaccで構文木を作成する.
@@ -118,13 +118,13 @@ func ConvNeg(f /* formula */ string) (string, error) {
 		return "", err
 	}
 
-	// 再帰的に構文木を探索するため,切り出した別関数を呼び出す.
+	// 再帰的に構文木を探索するため, 切り出した別関数を呼び出す.
 	fl := convNeg(p, "", 0)
 	return fl, nil
 
 }
 
-// convNeg は構文木を再帰的に探索し,否定をドモルガンの法則に従って変数へ寄せる. また,二重否定を削除する.
+// convNeg は構文木を再帰的に探索し, 否定をドモルガンの法則に従って変数へ寄せる. また,二重否定を削除する.
 func convNeg(e /* expression */ Expression, pop /* parent op */ string, nc /* negation counter */ int) string {
 	var rf string
 	switch e.(type) {
@@ -132,7 +132,7 @@ func convNeg(e /* expression */ Expression, pop /* parent op */ string, nc /* ne
 		op := string(rune(e.(BinOpExpr).Operator))
 		left := convNeg(e.(BinOpExpr).Left, op, nc)
 		right := convNeg(e.(BinOpExpr).Right, op, nc)
-		// 二重否定の場合は,&と|の変換を行わない.
+		// 二重否定の場合は, &と|の変換を行わない.
 		if nc%2 != 0 {
 			if op == "&" {
 				rf = left + "|" + right
@@ -175,9 +175,9 @@ func ConvTseitin(f /* formula */ string) ([][]string, error) {
 		return nil, err
 	}
 
-	// 構文木の探索でfresh variableの生成器を再帰関数内で共有するため,tseitinConverterをインスタンス化する.
+	// 構文木の探索でfresh variableの生成器を再帰関数内で共有するため, tseitinConverterをインスタンス化する.
 	tc := newTseitinConverter()
-	// 再帰関数はtseitinConverterのメソッドとして実装しているため,呼び出す.
+	// 再帰関数はtseitinConverterのメソッドとして実装しているため, 呼び出す.
 	fl, _ := tc.conv(p, "")
 	return fl, nil
 

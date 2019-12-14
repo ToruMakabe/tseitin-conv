@@ -30,7 +30,7 @@ func convert() int {
 	scanner.Scan()
 	f := scanner.Text()
 
-	// 変換に要した時間を計測するため,開始時間を取得する.
+	// 変換に要した時間を計測するため, 開始時間を取得する.
 	st := time.Now()
 
 	// 含意を変換する.
@@ -43,7 +43,7 @@ func convert() int {
 		return 1
 	}
 
-	// 否定を変数に寄せ,二重否定を削除する.ここまでの結果でNNFを得る.
+	// 否定を変数に寄せ, 二重否定を削除する. ここまでの結果でNNFを得る.
 	nnf, err = formula.ConvNeg(r)
 	if err != nil {
 		fmt.Println()
@@ -63,7 +63,7 @@ func convert() int {
 		return 1
 	}
 
-	// Tseitin変換の結果が[][]stringのスライスで得られるため,内側の選言部分を文字列化する.
+	// Tseitin変換の結果が[][]stringのスライスで得られるため, 内側の選言部分を文字列化する.
 	for _, i := range cnfm {
 		cnf = append(cnf, "("+strings.Join(i, "|")+")")
 	}
