@@ -28,6 +28,10 @@ func convert() int {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	f := scanner.Text()
+	if err := scanner.Err(); err != nil {
+		printError(fmt.Errorf("scanner error"))
+		return 1
+	}
 
 	// 変換に要した時間を計測するため, 開始時間を取得する.
 	st := time.Now()
