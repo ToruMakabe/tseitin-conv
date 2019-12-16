@@ -12,11 +12,11 @@ type Expression interface{}
 
 type Token struct {
 	Token   int
-	Literal string
+	Atomic string
 }
 
-type Literal struct {
-	Literal string
+type Atomic struct {
+	Atomic string
 }
 
 type NotOpExpr struct {
@@ -39,7 +39,7 @@ type BinOpExpr struct {
 
 %type<expr> formula
 %type<expr> expr and_expr or_expr not_expr imply_expr parenth_expr
-%token<token> LITERAL
+%token<token> ATOMIC
 
 %right '>'
 %left '&' '|'
@@ -56,9 +56,9 @@ formula
   }
 
 expr
-	: LITERAL
+	: ATOMIC
 	{
-		$$ = Literal{Literal: $1.Literal}
+		$$ = Atomic{Atomic: $1.Atomic}
 	}
 	| and_expr
 	| or_expr
@@ -108,9 +108,9 @@ type Lexer struct {
 func (l *Lexer) Lex(lval /* lexer value */ *yySymType) int {
 	token := int(l.Scan())
 	if token == scanner.Ident {
-		token = LITERAL
+		token = ATOMIC
 	}
-	lval.token = Token{Token: token, Literal: l.TokenText()}
+	lval.token = Token{Token: token, Atomic: l.TokenText()}
 	return token
 }
 

@@ -16,12 +16,12 @@ import (
 type Expression interface{}
 
 type Token struct {
-	Token   int
-	Literal string
+	Token  int
+	Atomic string
 }
 
-type Literal struct {
-	Literal string
+type Atomic struct {
+	Atomic string
 }
 
 type NotOpExpr struct {
@@ -42,13 +42,13 @@ type yySymType struct {
 	expr  Expression
 }
 
-const LITERAL = 57346
+const ATOMIC = 57346
 
 var yyToknames = [...]string{
 	"$end",
 	"error",
 	"$unk",
-	"LITERAL",
+	"ATOMIC",
 	"'>'",
 	"'&'",
 	"'|'",
@@ -75,9 +75,9 @@ type Lexer struct {
 func (l *Lexer) Lex(lval /* lexer value */ *yySymType) int {
 	token := int(l.Scan())
 	if token == scanner.Ident {
-		token = LITERAL
+		token = ATOMIC
 	}
-	lval.token = Token{Token: token, Literal: l.TokenText()}
+	lval.token = Token{Token: token, Atomic: l.TokenText()}
 	return token
 }
 
@@ -513,7 +513,7 @@ yydefault:
 		yyDollar = yyS[yypt-1 : yypt+1]
 //line parser.go.y:60
 		{
-			yyVAL.expr = Literal{Literal: yyDollar[1].token.Literal}
+			yyVAL.expr = Atomic{Atomic: yyDollar[1].token.Atomic}
 		}
 	case 8:
 		yyDollar = yyS[yypt-3 : yypt+1]

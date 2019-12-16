@@ -2,7 +2,7 @@
 state 0
 	$accept: .formula $end 
 
-	LITERAL  shift 3
+	ATOMIC  shift 3
 	'~'  shift 9
 	'('  shift 10
 	.  error
@@ -35,7 +35,7 @@ state 2
 
 
 state 3
-	expr:  LITERAL.    (2)
+	expr:  ATOMIC.    (2)
 
 	.  reduce 2 (src line 58)
 
@@ -73,7 +73,7 @@ state 8
 state 9
 	not_expr:  '~'.expr 
 
-	LITERAL  shift 3
+	ATOMIC  shift 3
 	'~'  shift 9
 	'('  shift 10
 	.  error
@@ -88,7 +88,7 @@ state 9
 state 10
 	parenth_expr:  '('.expr ')' 
 
-	LITERAL  shift 3
+	ATOMIC  shift 3
 	'~'  shift 9
 	'('  shift 10
 	.  error
@@ -103,7 +103,7 @@ state 10
 state 11
 	and_expr:  expr '&'.expr 
 
-	LITERAL  shift 3
+	ATOMIC  shift 3
 	'~'  shift 9
 	'('  shift 10
 	.  error
@@ -118,7 +118,7 @@ state 11
 state 12
 	or_expr:  expr '|'.expr 
 
-	LITERAL  shift 3
+	ATOMIC  shift 3
 	'~'  shift 9
 	'('  shift 10
 	.  error
@@ -133,7 +133,7 @@ state 12
 state 13
 	imply_expr:  expr '>'.expr 
 
-	LITERAL  shift 3
+	ATOMIC  shift 3
 	'~'  shift 9
 	'('  shift 10
 	.  error

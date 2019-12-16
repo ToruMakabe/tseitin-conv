@@ -52,8 +52,8 @@ func (tc *tseitinConverter) conv(e /* expression */ Expression, pop /* parent op
 		op := string(rune(e.(NotOpExpr).Operator))
 		right, v := tc.conv(e.(NotOpExpr).Right, op)
 		return right, v
-	case Literal:
-		rf = e.(Literal).Literal
+	case Atomic:
+		rf = e.(Atomic).Atomic
 		// 親の結合子が否定の場合は否定のリテラルにする.
 		if pop == "~" {
 			rf = "~" + rf
@@ -66,7 +66,37 @@ func (tc *tseitinConverter) conv(e /* expression */ Expression, pop /* parent op
 
 }
 
-// ConvImply は含意を変換する.
+// ConvNNF は否定標準形への変換を行う.
+func ConvNNF(f /* formula */ string) (string, error) {
+	var (
+		r   *strings.Reader
+		p   Expression
+		err error
+	)
+
+	// 含意を変換するため, goyaccで構文木を作成する.
+	r = strings.NewReader(f)
+	p, err = Parse(r)
+	if err != nil {
+		return "", err
+	}
+	// 含意を変換する. 再帰的に構文木を探索するため, 切り出した別関数を呼び出す.
+	fl := convImply(p, "")
+
+	// 否定をアトミックに寄せ, 二重否定を削除するため, goyaccで構文木を作成する.
+	r = strings.NewReader(fl)
+	p, err = Parse(r)
+	if err != nil {
+		return "", err
+	}
+	// 否定をアトミックに寄せ, 二重否定を削除する. 再帰的に構文木を探索するため, 切り出した別関数を呼び出す.
+	fl = convNeg(p, "", 0)
+
+	return fl, nil
+
+}
+
+// ConvImply は含意を変換する, convImplyのテスト用関数である.
 func ConvImply(f /* formula */ string) (string, error) {
 	r := strings.NewReader(f)
 	// goyaccで構文木を作成する.
@@ -102,14 +132,14 @@ func convImply(e /* expression */ Expression, pop /* parent op */ string) string
 		op := string(rune(e.(NotOpExpr).Operator))
 		right := convImply(e.(NotOpExpr).Right, op)
 		return op + right
-	case Literal:
-		return e.(Literal).Literal
+	case Atomic:
+		return e.(Atomic).Atomic
 	default:
 		return ""
 	}
 }
 
-// ConvNeg は否定を変数へ寄せ, 二重否定を削除する.
+// ConvNeg は否定を変数へ寄せ, 二重否定を削除する, convNegのテスト用関数である.
 func ConvNeg(f /* formula */ string) (string, error) {
 	r := strings.NewReader(f)
 	// goyaccで構文木を作成する.
@@ -154,8 +184,8 @@ func convNeg(e /* expression */ Expression, pop /* parent op */ string, nc /* ne
 		nc++
 		right := convNeg(e.(NotOpExpr).Right, op, nc)
 		return right
-	case Literal:
-		rf = e.(Literal).Literal
+	case Atomic:
+		rf = e.(Atomic).Atomic
 		// 二重否定の場合は否定記号を追加しない.
 		if nc%2 != 0 {
 			rf = "~" + rf

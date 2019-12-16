@@ -16,7 +16,6 @@ const inputFormatMsg = "Please input a propotitinal formula to convert to CNF.\n
 func convert() int {
 
 	var (
-		r    string
 		nnf  string
 		cnf  []string
 		cnfm [][]string
@@ -33,18 +32,8 @@ func convert() int {
 	// 変換に要した時間を計測するため, 開始時間を取得する.
 	st := time.Now()
 
-	// 含意を変換する.
-	r, err = formula.ConvImply(f)
-	if err != nil {
-		fmt.Println()
-		printError(err)
-		fmt.Println()
-		fmt.Println(inputFormatMsg)
-		return 1
-	}
-
-	// 否定を変数に寄せ, 二重否定を削除する. ここまでの結果でNNFを得る.
-	nnf, err = formula.ConvNeg(r)
+	// 否定標準形(NNF)への変換を行う.
+	nnf, err = formula.ConvNNF(f)
 	if err != nil {
 		fmt.Println()
 		printError(err)
