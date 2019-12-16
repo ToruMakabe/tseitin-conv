@@ -96,21 +96,6 @@ func ConvNNF(f /* formula */ string) (string, error) {
 
 }
 
-// ConvImply は含意を変換する, convImplyのテスト用関数である.
-func ConvImply(f /* formula */ string) (string, error) {
-	r := strings.NewReader(f)
-	// goyaccで構文木を作成する.
-	p, err := Parse(r)
-	if err != nil {
-		return "", err
-	}
-
-	// 再帰的に構文木を探索するため, 切り出した別関数を呼び出す.
-	fl := convImply(p, "")
-	return fl, nil
-
-}
-
 // convImply は構文木を再帰的に探索し,含意を変換する.
 func convImply(e /* expression */ Expression, pop /* parent op */ string) string {
 	var rf string
@@ -137,21 +122,6 @@ func convImply(e /* expression */ Expression, pop /* parent op */ string) string
 	default:
 		return ""
 	}
-}
-
-// ConvNeg は否定を変数へ寄せ, 二重否定を削除する, convNegのテスト用関数である.
-func ConvNeg(f /* formula */ string) (string, error) {
-	r := strings.NewReader(f)
-	// goyaccで構文木を作成する.
-	p, err := Parse(r)
-	if err != nil {
-		return "", err
-	}
-
-	// 再帰的に構文木を探索するため, 切り出した別関数を呼び出す.
-	fl := convNeg(p, "", 0)
-	return fl, nil
-
 }
 
 // convNeg は構文木を再帰的に探索し, 否定をドモルガンの法則に従って変数へ寄せる. また,二重否定を削除する.
