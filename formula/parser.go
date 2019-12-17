@@ -74,7 +74,7 @@ type Lexer struct {
 
 func (l *Lexer) Lex(lval /* lexer value */ *yySymType) int {
 	token := int(l.Scan())
-	if token == scanner.Ident {
+	if token == scanner.Ident || token == scanner.Int {
 		token = ATOMIC
 	}
 	lval.token = Token{Token: token, Atomic: l.TokenText()}
