@@ -1,6 +1,7 @@
 package formula
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -57,6 +58,10 @@ func (tc *tseitinConverter) conv(e /* expression */ Expression, pop /* parent op
 		// 親の結合子が否定の場合は否定のリテラルにする.
 		if pop == "~" {
 			rf = "~" + rf
+		}
+		// アトミックのみの式はそのまま返す.
+		if pop == "" {
+			return append(r, []string{rf}), ""
 		}
 		return nil, rf
 	default:
@@ -179,6 +184,11 @@ func ConvTseitin(f /* formula */ string) ([][]string, error) {
 	tc := newTseitinConverter()
 	// 再帰関数はtseitinConverterのメソッドとして実装しているため, 呼び出す.
 	fl, _ := tc.conv(p, "")
+	// 変換した式全体を真とするため, fresh variableを導入した場合は最後のfresh VariableをCNFに追加する.
+	lastFv := tc.fv + strconv.Itoa(tc.fc)
+	if lastFv != "x0" {
+		fl = append(fl, []string{lastFv})
+	}
 	return fl, nil
 
 }
