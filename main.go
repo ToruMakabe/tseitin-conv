@@ -10,7 +10,7 @@ import (
 	"github.com/ToruMakabe/tseitin-conv/formula"
 )
 
-const inputFormatMsg = "Please input a propotitinal formula to convert to CNF.\nNagation: ~, And: &, Or: |, Imply: >\nYou cannot use x(n) as propotional variable due to reserved word for fresh variable of Tseitin convertion.\nSample: A|(B&C&(D|E))\n"
+const inputFormatMsg = "Please input a propositional formula to convert to CNF.\nNegation: ~, And: &, Or: |, Imply: >\nYou cannot use x(n) as propositional variable due to reserved word for fresh variable of Tseitin conversion.\nSample: A|(B&C&(D|E))\n"
 
 // convertは実質的な主処理である.
 func convert() int {
@@ -29,7 +29,14 @@ func convert() int {
 	scanner.Scan()
 	f := scanner.Text()
 	if err := scanner.Err(); err != nil {
+		fmt.Println()
 		printError(fmt.Errorf("scanner error"))
+		fmt.Println()
+		return 1
+	}
+	if strings.Contains(f, "x") {
+		fmt.Println()
+		fmt.Println(inputFormatMsg)
 		return 1
 	}
 
