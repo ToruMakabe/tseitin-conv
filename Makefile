@@ -1,6 +1,6 @@
 APP=tseitin-conv
 
-.PHONY:	 build
+.PHONY: build
 build: clean
 	go build -o ${APP} main.go
 
